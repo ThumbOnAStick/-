@@ -55,6 +55,18 @@ public class SFMManager : Manager
         }
     }
 
+    void LoadAllConditions()
+    {
+        List<ConditionData> conds = Resources.LoadAll<ConditionData>(condition_folder).ToList();
+        foreach (var condition_data in conds)
+        {
+            StateMachineLayer layer=layers[condition_data.self_layer];
+            Condition condition =new(condition_data,this);
+            StateMachine from = condition_data.from_id;
+            bool exists_from_machine =layer.conditions.ContainsKey(condition);
+        }
+    }
+
 
     void InitStateMachineLayers()
     {

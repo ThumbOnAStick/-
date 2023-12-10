@@ -12,8 +12,9 @@ public class StateMachineData: ScriptableObject
 }
 
 [CreateAssetMenu(fileName = "condition", menuName = "SFM/Condition")]
-public class StateMachineCondition:ScriptableObject
+public class ConditionData:ScriptableObject
 {
+    public int self_layer;
     public string from_id;
     public string to_id;
     public string target_signal;

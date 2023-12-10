@@ -47,23 +47,19 @@ public class StateMachine
 }
 
 //second created
-public class Condition 
+public class Condition
 {
-    public StateMachine from;
     public StateMachine to;
     public string target_signal;
 
-    public Condition(StateMachine _from, StateMachine _to, string _signal)
+    public Condition(ConditionData _so, SFMManager _master)
     {
-        from = _from;
-        to = _to;
-        target_signal = _signal; 
+        StateMachineLayer target_layer = _master.layers[_so.self_layer];
+     
+        to = target_layer.machines[_so.to_id];
+        target_signal = _so.target_signal;
     }
-    public void LoadFromPath(string _path, SFMManager _master)
-    {
-        StateMachineCondition so = Resources.Load<StateMachineCondition>(_path);
 
-    }
 }
 
 
@@ -73,6 +69,6 @@ public class StateMachineLayer
     public int id;
     public int activated_machine;
     public Dictionary<StateMachine, List<Condition>> conditions=new();
-    public List<StateMachine> machines=new();  
+    public Dictionary<string,StateMachine> machines=new();  
 
 }
