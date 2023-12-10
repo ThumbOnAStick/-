@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -18,17 +19,17 @@ public class StateMachine
     {
         //update myself
         update_methods.Invoke();
-        children_layer?.machines[children_layer.activated_machine].Update();
+        children_layer?.machines[children_layer.activated_id].Update();
 
         //check condition
-        var all_conds =self_layer.conditions[this];
+        var all_conds =self_layer.conditions[id];
         int len = all_conds.Count;
         for(int i = 0; i < len; i++)
         {
             Condition condition = all_conds[i];
             if (SignalUtility.CapcturedSignal(condition.target_signal))
             {
-                self_layer.activated_machine =self_layer.machines.IndexOf(condition.to);
+                self_layer.activated_id =condition.to;
                 return;
             }
         }
@@ -42,21 +43,25 @@ public class StateMachine
             _master.Invoke(_so.update_methods,0f);
         };
         self_layer = _master.layers[_so.self_layer];
-        children_layer = _master.layers[_so.children_layer];
+        children_layer = null;
+        if (_so.children_layer > 0)
+        {
+            children_layer = _master.layers[_so.children_layer];
+        }
     }
 }
 
 //second created
 public class Condition
 {
-    public StateMachine to;
+    public string to;
     public string target_signal;
 
     public Condition(ConditionData _so, SFMManager _master)
     {
         StateMachineLayer target_layer = _master.layers[_so.self_layer];
      
-        to = target_layer.machines[_so.to_id];
+        to = _so.to_id;
         target_signal = _so.target_signal;
     }
 
@@ -67,8 +72,8 @@ public class Condition
 public class StateMachineLayer
 {
     public int id;
-    public int activated_machine;
-    public Dictionary<StateMachine, List<Condition>> conditions=new();
+    public string activated_id;
+    public Dictionary<string, List<Condition>> conditions=new();
     public Dictionary<string,StateMachine> machines=new();  
 
 }

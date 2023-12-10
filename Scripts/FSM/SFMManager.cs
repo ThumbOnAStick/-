@@ -20,16 +20,19 @@ public class SFMManager : Manager
         index = 0;
         base.Init();
 
-        //Load state machines and conditions(Combine to layer in the progress)
+        //Load state machines and conditions into layers
+        LoadAllStateMachines();
+        LoadAllConditions();
 
-  
-        
+        //Summarize
+        ListAllLayers();    
+
     }
 
     public override void UpdateMethods()
     {
         base.UpdateMethods();
-        layers[0].machines[layers[0].activated_machine].Update();
+        layers[0].machines[layers[0].activated_id].Update();
     }
 
     void LoadAllStateMachines()
@@ -51,7 +54,7 @@ public class SFMManager : Manager
 
             //Create new state machine
             StateMachine new_machine = new(data, this);
-            layers[data.self_layer].machines.Add(new_machine);
+            layers[data.self_layer].machines.Add(new_machine.id, new_machine);
         }
     }
 
@@ -60,20 +63,29 @@ public class SFMManager : Manager
         List<ConditionData> conds = Resources.LoadAll<ConditionData>(condition_folder).ToList();
         foreach (var condition_data in conds)
         {
-            StateMachineLayer layer=layers[condition_data.self_layer];
-            Condition condition =new(condition_data,this);
-            StateMachine from = condition_data.from_id;
-            bool exists_from_machine =layer.conditions.ContainsKey(condition);
+            StateMachineLayer layer = layers[condition_data.self_layer];
+            Condition condition = new(condition_data, this);
+            bool exists_in_machine = layer.conditions.ContainsKey(condition_data.from_id);
+            if (!exists_in_machine)
+            {
+                layer.conditions.Add(condition_data.from_id, new() { condition });
+            }
+            else
+            {
+                layer.conditions[condition_data.from_id].Add(condition);
+            }
         }
     }
 
-
-    void InitStateMachineLayers()
+    void ListAllLayers()
     {
-        foreach (var layer in layers)
+        foreach(var layer in layers)
         {
-             
+            Debug.Log("Machines: " + layer.machines.Count);
+            Debug.Log("Conditions: "+layer.conditions.Count);
         }
     }
+
+
 
 }
