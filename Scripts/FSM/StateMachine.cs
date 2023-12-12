@@ -10,17 +10,18 @@ public class StateMachine
 {
     public string id;
     //Calls functions from other managers
-    Action update_methods;
+    public Action update_methods;
+    public Action enter_methods;
     public StateMachineLayer self_layer;
     public StateMachineLayer children_layer;
 
+    public void Enter()
+    {
+        enter_methods.Invoke();
+    }
 
     public void Update()
     {
-        //update myself
-        update_methods.Invoke();
-        children_layer?.machines[children_layer.activated_id].Update();
-
         //check condition
         var all_conds =self_layer.conditions[id];
         int len = all_conds.Count;
@@ -29,26 +30,18 @@ public class StateMachine
             Condition condition = all_conds[i];
             if (SignalUtility.CapcturedSignal(condition.target_signal))
             {
-                self_layer.activated_id =condition.to;
+                self_layer.SwitchToNewState(condition.to);   
                 return;
             }
         }
+
+        //update myself
+        update_methods.Invoke();
+        children_layer?.machines[children_layer.activated_id].Update();
+
     }
 
-    public StateMachine(StateMachineData _so, SFMManager _master)
-    {
-        id=_so.id;
-        update_methods =delegate
-        {
-            _master.Invoke(_so.update_methods,0f);
-        };
-        self_layer = _master.layers[_so.self_layer];
-        children_layer = null;
-        if (_so.children_layer > 0)
-        {
-            children_layer = _master.layers[_so.children_layer];
-        }
-    }
+ 
 }
 
 //second created
@@ -57,7 +50,7 @@ public class Condition
     public string to;
     public string target_signal;
 
-    public Condition(ConditionData _so, SFMManager _master)
+    public Condition(ConditionData _so, SFM _master)
     {
         StateMachineLayer target_layer = _master.layers[_so.self_layer];
      
@@ -67,13 +60,45 @@ public class Condition
 
 }
 
-
-//combined with state machines and conditions
+//Combined with state machines and conditions
 public class StateMachineLayer
 {
     public int id;
     public string activated_id;
-    public Dictionary<string, List<Condition>> conditions=new();
-    public Dictionary<string,StateMachine> machines=new();  
+    public Dictionary<string, List<Condition>> conditions = new();
+    public Dictionary<string, StateMachine> machines = new();
 
+    public void SwitchToNewState(string to)
+    {
+        activated_id = to;
+        machines[to].Enter();
+    }
+}
+
+//One single SFM
+public class SFM
+{
+    public List<StateMachineLayer> layers = new();
+
+    public void Enter()
+    {
+        layers[0].machines[layers[0].activated_id].Enter();
+    }
+
+    public void Update()
+    {
+        layers[0].machines[layers[0].activated_id].Update();
+    }
+}
+
+public static class RegisteredSFM
+{
+    public static int desired_registers = 1;
+
+    public static Dictionary<Manager, SFM> clients = new();
+
+    public static void Register(Manager _manager,SFM _sfm)
+    {
+        clients.Add(_manager, _sfm); 
+    }
 }

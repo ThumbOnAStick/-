@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
             manager.Init();
             
         }
-        //Re-order the managers, FSM manager goes first
+        //Re-order the managers, FSM manager goes last
         managers.OrderBy(x=>x.index).ToList();
         
     }
@@ -29,5 +29,7 @@ public class GameManager : MonoBehaviour
         {
             manager.UpdateMethods();
         }
+
+
     }
 }

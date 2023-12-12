@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 
 
-public class MenuManager : MonoBehaviour
+public class MenuManager : Manager
 {
     private void Awake()
     {
