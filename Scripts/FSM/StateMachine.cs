@@ -18,7 +18,7 @@ public class StateMachine
 
     public void Enter()
     {
-        enter_methods.Invoke();
+        enter_methods?.Invoke();
     }
 
     public void Update()
@@ -26,7 +26,8 @@ public class StateMachine
         //check condition
         var all_conds =self_layer.conditions[id];
         int len = all_conds.Count;
-        for(int i = 0; i < len; i++)
+
+        for (int i = 0; i < len; i++)
         {
             UnPackedCondition condition = all_conds[i];
             if (SignalUtility.CapcturedSignal(condition._target_signal))
@@ -38,13 +39,13 @@ public class StateMachine
         }
 
         //update myself
-        update_methods.Invoke();
+        update_methods?.Invoke();
         children_layer?.machines[children_layer.activated_id].Update();
     }
 
     public void Exit()
     {
-        exit_methods.Invoke();
+        exit_methods?.Invoke();
     }
 
     public void ApplyTo()
@@ -69,13 +70,13 @@ public class Condition
         {
             var conditions = self_layer.conditions;
             UnPackedCondition cond = new() { _to = to[i], _target_signal = target_signal };
-            if (conditions.ContainsKey(from[len]))
+            if (conditions.ContainsKey(from[i]))
             {
-                conditions[from[len]].Add(cond);
+                conditions[from[i]].Add(cond);
             }
             else
             {
-                conditions.Add(from[len], new() { cond });
+                conditions.Add(from[i], new() { cond });
             }
         }
 
@@ -99,6 +100,7 @@ public class StateMachineLayer
 
     public void SwitchToNewState(string to)
     {
+        Debug.Log("Switch to" + to);
         activated_id = to;
         machines[to].Enter();
     }
@@ -122,7 +124,6 @@ public class SFM
 
 public static class RegisteredSFM
 {
-    public static int desired_registers = 1;
 
     public static Dictionary<Manager, SFM> clients = new();
 

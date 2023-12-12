@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class SFMManager : Manager
 {
 
     [HideInInspector]
-    
+
+    List<KeyValuePair<Manager, SFM>> clean_clients;
+
     public override void Init()
     {
         base.Init();
+        clean_clients = RegisteredSFM.clients.Where(x => x.Value.layers.Count > 0).ToList();
+        foreach (var client in clean_clients)
+        {
+            client.Value.Enter();
+        }
     }
 
 
@@ -18,13 +26,13 @@ public class SFMManager : Manager
     public override void UpdateMethods()
     {
         base.UpdateMethods();
-        foreach(var client in RegisteredSFM.clients)
+        foreach (var client in clean_clients)
         {
             client.Value.Update();
         }
     }
 
-    
+
 
 
 

@@ -9,17 +9,23 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        //Reset the signals
+        SignalUtility.KillAllSignals();
+
         //Find the managers in current scene with FindObjectsOfType 
-        managers=FindObjectsOfType<Manager>().ToList();
+        managers = FindObjectsOfType<Manager>().ToList();
+
+        //Re-order the managers, FSM manager goes last
+        managers.OrderBy(x => x.index).ToList();
+
+        //Init
         foreach (var manager in managers)
         {
-           
+            Debug.Log(manager.gameObject.name);
             manager.Init();
-            
+
         }
-        //Re-order the managers, FSM manager goes last
-        managers.OrderBy(x=>x.index).ToList();
-        
+
     }
 
     private void Update()

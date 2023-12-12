@@ -21,6 +21,6 @@ public class Manager : MonoBehaviour
 
     public virtual void SFMInit()
     {
-
+        RegisteredSFM.clients.Add(this,sfm);
     }
 }

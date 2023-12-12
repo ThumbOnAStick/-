@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BattleManager : Manager
 {
-
+  
 
     //game loop
     public override void Init()
@@ -15,20 +15,30 @@ public class BattleManager : Manager
 
     public override void SFMInit()
     {
-        base.SFMInit();
-        sfm = new SFM();
-        sfm.layers = new() { The_only_layer };
+     
+        //machines
         Player_one_round.ApplyTo();
         Player_two_round.ApplyTo();
         Game_end.ApplyTo();
+
+        //conditions
+        NextPlayer.ApplyTo();
+        EndGame.ApplyTo();
+
         The_only_layer.activated_id = Player_one_round.id;
+
+        sfm = new SFM
+        {
+            layers = new() { The_only_layer }
+        };
+        Debug.Log("complete sfm init");
+        base.SFMInit();
 
     }
 
     public override void UpdateMethods()
     {
         base.UpdateMethods();
-
     }
 
 
@@ -98,16 +108,16 @@ public class BattleManager : Manager
     }
 
     //My state machine conditions
-    public Condition Next_player
+    public Condition NextPlayer
     {
         get
         {
             return new()
             {
-                from = { "player1","player2" },
-                to = { "player2","player1" },
+                from = new List<string>{ "player1", "player2" },
+                to = new List<string>{ "player2", "player1" },
+                target_signal = "complete_operation",
                 self_layer = The_only_layer,
-                target_signal = "complete_operation"
 
             };
         }
@@ -119,8 +129,8 @@ public class BattleManager : Manager
         {
             return new()
             {
-                from = { "player1", "game end" },
-                to = { "player2", "game end" },
+                from = new List<string> { "player1", "game end" },
+                to = new List<string> { "player2", "game end" },
                 self_layer = The_only_layer,
                 target_signal = "win"
 
@@ -129,7 +139,7 @@ public class BattleManager : Manager
     }
 
     // My state machine layers
-    public StateMachineLayer The_only_layer;
+    public StateMachineLayer The_only_layer=new();
 
 
 }
