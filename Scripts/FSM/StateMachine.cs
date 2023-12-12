@@ -12,6 +12,7 @@ public class StateMachine
     //Calls functions from other managers
     public Action update_methods;
     public Action enter_methods;
+    public Action exit_methods;
     public StateMachineLayer self_layer;
     public StateMachineLayer children_layer;
 
@@ -27,10 +28,11 @@ public class StateMachine
         int len = all_conds.Count;
         for(int i = 0; i < len; i++)
         {
-            Condition condition = all_conds[i];
-            if (SignalUtility.CapcturedSignal(condition.target_signal))
+            UnPackedCondition condition = all_conds[i];
+            if (SignalUtility.CapcturedSignal(condition._target_signal))
             {
-                self_layer.SwitchToNewState(condition.to);   
+                self_layer.SwitchToNewState(condition._to);
+                Exit();
                 return;
             }
         }
@@ -38,26 +40,53 @@ public class StateMachine
         //update myself
         update_methods.Invoke();
         children_layer?.machines[children_layer.activated_id].Update();
-
     }
 
- 
+    public void Exit()
+    {
+        exit_methods.Invoke();
+    }
+
+    public void ApplyTo()
+    {
+        self_layer.machines.Add(key: id, value: this);
+    }
+
 }
 
 //second created
 public class Condition
 {
-    public string to;
+    public List<string> from;
+    public List<string> to;
     public string target_signal;
+    public StateMachineLayer self_layer;
 
-    public Condition(ConditionData _so, SFM _master)
+    public void ApplyTo()
     {
-        StateMachineLayer target_layer = _master.layers[_so.self_layer];
-     
-        to = _so.to_id;
-        target_signal = _so.target_signal;
-    }
+        int len = from.Count;
+        for (int i = 0; i < len; i++)
+        {
+            var conditions = self_layer.conditions;
+            UnPackedCondition cond = new() { _to = to[i], _target_signal = target_signal };
+            if (conditions.ContainsKey(from[len]))
+            {
+                conditions[from[len]].Add(cond);
+            }
+            else
+            {
+                conditions.Add(from[len], new() { cond });
+            }
+        }
 
+
+    }
+}
+
+public class UnPackedCondition
+{
+    public string _to;
+    public string _target_signal;    
 }
 
 //Combined with state machines and conditions
@@ -65,7 +94,7 @@ public class StateMachineLayer
 {
     public int id;
     public string activated_id;
-    public Dictionary<string, List<Condition>> conditions = new();
+    public Dictionary<string, List<UnPackedCondition>> conditions = new();
     public Dictionary<string, StateMachine> machines = new();
 
     public void SwitchToNewState(string to)

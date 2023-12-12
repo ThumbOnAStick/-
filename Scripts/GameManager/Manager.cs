@@ -11,10 +11,15 @@ public class Manager : MonoBehaviour
     //Assign the index
     public virtual void Init()
     {
-
+        SFMInit();
     }
 
     public virtual void UpdateMethods()
+    {
+
+    }
+
+    public virtual void SFMInit()
     {
 
     }
