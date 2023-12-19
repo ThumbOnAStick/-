@@ -1,3 +1,4 @@
+using ChessGrid;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,18 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        //Reset the signals
+
+        //Reset all the signals
         SignalUtility.KillAllSignals();
+
+        //All registered Fsm must be cleaed
+        RegisteredSFM.Init();
+
+        //Initialize the board
+        Chessboard.Init(15);
+
+        //Initialize input listener
+        InputListener.Init();
 
         //Find the managers in current scene with FindObjectsOfType 
         managers = FindObjectsOfType<Manager>().ToList();
@@ -21,21 +32,21 @@ public class GameManager : MonoBehaviour
         //Init
         foreach (var manager in managers)
         {
-            Debug.Log(manager.gameObject.name);
             manager.Init();
-
         }
 
     }
 
     private void Update()
     {
+        //Update input layer
+        InputListener.Update();
+
         //Update the managers
         foreach (var manager in managers)
         {
             manager.UpdateMethods();
         }
-
 
     }
 }

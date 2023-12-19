@@ -11,7 +11,6 @@ public static class SignalUtility
     {
         if (!emitted_signals.Contains(signal))
         {
-            Debug.Log(signal);
             emitted_signals.Add(signal);
         }
     }
@@ -20,6 +19,7 @@ public static class SignalUtility
     {
         if (emitted_signals.Contains(target))
         {
+            //Debug.Log("Recieved " + target);
             KillSignal(target);
             return true;
         }

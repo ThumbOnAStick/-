@@ -16,6 +16,16 @@ public class StateMachine
     public StateMachineLayer self_layer;
     public StateMachineLayer children_layer;
 
+    public StateMachine(string _id,Action _enter, Action _update, Action _exit, StateMachineLayer _self, StateMachineLayer _children = null)
+    {
+        id = _id;   
+        update_methods = _update;
+        enter_methods = _enter;
+        exit_methods = _exit;   
+        self_layer = _self;
+        children_layer = _children;
+    }
+
     public void Enter()
     {
         enter_methods?.Invoke();
@@ -100,7 +110,7 @@ public class StateMachineLayer
 
     public void SwitchToNewState(string to)
     {
-        Debug.Log("Switch to" + to);
+        //Debug.Log("Switch to" + to);
         activated_id = to;
         machines[to].Enter();
     }
@@ -120,15 +130,22 @@ public class SFM
     {
         layers[0].machines[layers[0].activated_id].Update();
     }
+
+
 }
 
 public static class RegisteredSFM
 {
 
-    public static Dictionary<Manager, SFM> clients = new();
+    public static Dictionary<object, SFM> clients = new();
 
-    public static void Register(Manager _manager,SFM _sfm)
+    public static void Register(object _manager,SFM _sfm)
     {
         clients.Add(_manager, _sfm); 
+    }
+
+    public static void Init()
+    {
+        clients = new();
     }
 }

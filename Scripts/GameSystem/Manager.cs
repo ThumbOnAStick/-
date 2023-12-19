@@ -6,21 +6,21 @@ using UnityEngine.UIElements;
 public class Manager : MonoBehaviour
 {
     public int index=0;
-    public SFM sfm = new();
+    public List<SignalListener> listeners = new ();
 
     //Assign the index
     public virtual void Init()
     {
-        SFMInit();
+       
     }
 
     public virtual void UpdateMethods()
     {
-
+        foreach (var item in listeners)
+        {
+            item.Check();
+        }
     }
 
-    public virtual void SFMInit()
-    {
-        RegisteredSFM.clients.Add(this,sfm);
-    }
+ 
 }

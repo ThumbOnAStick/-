@@ -9,7 +9,7 @@ public class SFMManager : Manager
 
     [HideInInspector]
 
-    List<KeyValuePair<Manager, SFM>> clean_clients;
+    List<KeyValuePair<object, SFM>> clean_clients;
 
     public override void Init()
     {
