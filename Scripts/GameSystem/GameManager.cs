@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
     List<Manager> managers = new List<Manager>();
 
-    private void Awake()
+    protected override void Awake()
     {
-
-        //Reset all the signals
+        base.Awake();
+            //Reset all the signals
         SignalUtility.KillAllSignals();
 
         //All registered Fsm must be cleaed
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
             manager.Init();
         }
 
-    }
+    }   
 
     private void Update()
     {

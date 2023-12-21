@@ -8,7 +8,6 @@ public class Manager : MonoBehaviour
     public int index=0;
     public List<SignalListener> listeners = new ();
 
-    //Assign the index
     public virtual void Init()
     {
        

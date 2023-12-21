@@ -89,7 +89,7 @@ public static class VictoryCheck
             score++;
         }
 
-        while (target_grid.ContainsKey(up))
+        while (target_grid.ContainsKey(bottom))
         {
             bottom -= Vector2Int.one;
             score++;
@@ -103,7 +103,7 @@ public static class VictoryCheck
     {
         int score = 1;
 
-        Vector2Int back_slash_direction = Vector2Int.left+Vector2Int.up;
+        Vector2Int back_slash_direction = Vector2Int.left + Vector2Int.up;
 
         Vector2Int up = me + back_slash_direction;
         Vector2Int bottom = me - back_slash_direction;
@@ -114,7 +114,7 @@ public static class VictoryCheck
             score++;
         }
 
-        while (target_grid.ContainsKey(up))
+        while (target_grid.ContainsKey(bottom))
         {
             bottom -= back_slash_direction;
             score++;

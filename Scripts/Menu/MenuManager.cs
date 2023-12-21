@@ -11,7 +11,6 @@ public class MenuManager : Manager
     private void Awake()
     {
         Button[] buttons = FindObjectsOfType<Button>();
-        //Debug.Log("length: " + buttons.Length);
         int len = buttons.Length;
         foreach (var button in buttons)
         {

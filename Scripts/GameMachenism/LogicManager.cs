@@ -13,16 +13,16 @@ public class LogicManager : SFMClientManager
     //Game Loop
     public override void Init()
     {
+        base.Init();
         player1 = new(1, false);
         player2 = new(-1, false);
         active_controller = player1;
-        base.Init();
     }
 
     public override void SFMInit()
     {
         //Make machines and conds
-        InitBattleManagerStateMachines();
+        InitLogicManagerStateMachines();
 
         //Apply machines
         Player_one_round.ApplyTo();
@@ -49,18 +49,20 @@ public class LogicManager : SFMClientManager
     }
 
 
-    // My layers
+    // 逻辑管理器的状态机层级
     public StateMachineLayer The_only_layer = new();
 
-    //My statemachines and conds
+    //逻辑管理器的状态机
     StateMachine Player_one_round;
     StateMachine Player_two_round;
     StateMachine Game_end;
     Condition NextPlayer;
     Condition EndGame;
 
-    //Create
-    void InitBattleManagerStateMachines()
+    /// <summary>
+    /// 生成逻辑管理器的所有状态机
+    /// </summary>
+    void InitLogicManagerStateMachines()
     {
         //Debug.Log(player1.team);
         //Debug.Log(player2.team);
