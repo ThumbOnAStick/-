@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ChessGrid;
+using System;
 
-public class LogicManager : SFMClientManager
+public class LogicManager : SFMClientManager<LogicManager>
 {
+    //子模块：棋盘
+    public Chessboard current_board = new();
 
+    //子模块：控制器
     GameController active_controller=null;
     GameController player1;
     GameController player2;
@@ -13,10 +17,11 @@ public class LogicManager : SFMClientManager
     //Game Loop
     public override void Init()
     {
-        base.Init();
         player1 = new(1, false);
         player2 = new(-1, false);
         active_controller = player1;
+        current_board.Init(15);
+        base.Init();
     }
 
     public override void SFMInit()
@@ -39,6 +44,7 @@ public class LogicManager : SFMClientManager
         {
             layers = new() { The_only_layer }
         };
+
         base.SFMInit();
 
     }
@@ -72,11 +78,12 @@ public class LogicManager : SFMClientManager
             delegate
          {
              active_controller = player1;
+             SwitchController();
          },
             delegate
          {
-             CheckHumanPlayerOperation();
-             CheckComputerPlayerOperation();
+             //CheckHumanPlayerOperation();
+             //CheckComputerPlayerOperation();
          },
             delegate
          {
@@ -90,11 +97,12 @@ public class LogicManager : SFMClientManager
          delegate
         {
             active_controller = player2;
+            SwitchController();
         },
          delegate
         {
-            CheckHumanPlayerOperation();
-            CheckComputerPlayerOperation();
+            //CheckHumanPlayerOperation();
+            //CheckComputerPlayerOperation();
         },
          delegate
         {
@@ -138,31 +146,30 @@ public class LogicManager : SFMClientManager
 
     }
 
-    //Controller Update
-    public void CheckHumanPlayerOperation()
+    /// <summary>
+    /// 让游戏控制器监听放置的事件
+    /// </summary>
+    public void SwitchController()
     {
+        Action action = () =>
+        {
+            active_controller.CtrollerPlace();
+        };
+
+        //Is AI
         if (active_controller.is_ai == true)
         {
+            EventManager.Instance.UnAssign("AIThinkingComplete");
+            EventManager.Instance.TryToRegister(action,"AIThinkingComplete");
             return;
         }
+        //Else
+        EventManager.Instance.UnAssign("HumanTryToPlace");
+        EventManager.Instance.TryToRegister(action, "HumanTryToPlace");
 
-        if (SignalUtility.CapcturedSignal("HumanTryToPlace"))
-        {
-            active_controller.CtrollerPlace();
-        }
     }
 
-    public void CheckComputerPlayerOperation()
-    {
-        if (!active_controller.is_ai == true)
-        {
-            return;
-        }
 
-        if (SignalUtility.CapcturedSignal("AIThinkingComplete"))
-        {
-            active_controller.CtrollerPlace();
-        }
-    }
+
 
 }

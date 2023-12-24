@@ -29,24 +29,24 @@ public class StateMachine
     public void Enter()
     {
         enter_methods?.Invoke();
+
+        var all_conds = self_layer.conditions[id];
+        int len = all_conds.Count;
+        for (int i = 0; i < len; i++)
+        {
+            UnPackedCondition condition = all_conds[i];
+            void onExitAction()
+            {
+                Exit();
+                self_layer.SwitchToNewState(condition._to);
+            }
+            EventManager.Instance.TryToRegister(onExitAction, all_conds[i]._target_signal);
+            Debug.Log("Registered: "+ all_conds[i]._target_signal);
+        }
     }
 
     public void Update()
     {
-        //check condition
-        var all_conds =self_layer.conditions[id];
-        int len = all_conds.Count;
-
-        for (int i = 0; i < len; i++)
-        {
-            UnPackedCondition condition = all_conds[i];
-            if (SignalUtility.CapcturedSignal(condition._target_signal))
-            {
-                self_layer.SwitchToNewState(condition._to);
-                Exit();
-                return;
-            }
-        }
 
         //update myself
         update_methods?.Invoke();
@@ -56,6 +56,13 @@ public class StateMachine
     public void Exit()
     {
         exit_methods?.Invoke();
+
+        var all_conds = self_layer.conditions[id];
+        int len = all_conds.Count;
+        for (int i = 0; i < len; i++)
+        {
+            EventManager.Instance.UnAssign(all_conds[i]._target_signal);
+        }
     }
 
     public void ApplyTo()
@@ -114,6 +121,12 @@ public class StateMachineLayer
         activated_id = to;
         machines[to].Enter();
     }
+    //Action switch_to  = delegate { SwitchToNewState("123"); };
+    
+
+    //public void Listen()
+    //{
+    //}
 }
 
 //One single SFM

@@ -6,47 +6,30 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    List<Manager> managers = new List<Manager>();
 
-    protected override void Awake()
+    private void Start()
     {
-        base.Awake();
-            //Reset all the signals
-        SignalUtility.KillAllSignals();
-
         //All registered Fsm must be cleaed
         RegisteredSFM.Init();
 
-        //Initialize the board
-        Chessboard.Init(15);
-
         //Initialize input listener
-        InputListener.Init();
+        InputManager.Instance.Init();
+        LogicManager.Instance.Init();
+        VideoManager.Instance.Init();
+        SFMManager.Instance.Init();
+    }
+    
 
-        //Find the managers in current scene with FindObjectsOfType 
-        managers = FindObjectsOfType<Manager>().ToList();
-
-        //Re-order the managers, FSM manager goes last
-        managers.OrderBy(x => x.index).ToList();
-
-        //Init
-        foreach (var manager in managers)
-        {
-            manager.Init();
-        }
-
-    }   
 
     private void Update()
     {
         //Update input layer
-        InputListener.Update();
+        InputManager.Instance.UpdateMethods();
+        LogicManager.Instance.UpdateMethods();
+        VideoManager.Instance.UpdateMethods();
+        SFMManager.Instance.UpdateMethods();
 
         //Update the managers
-        foreach (var manager in managers)
-        {
-            manager.UpdateMethods();
-        }
 
     }
 }

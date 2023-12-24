@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
-public class SFMManager : ManagerSingleton
+public class SFMManager : Manager<SFMManager>
 {
 
     [HideInInspector]

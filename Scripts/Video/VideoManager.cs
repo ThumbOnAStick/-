@@ -1,26 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VideoManager : ManagerSingleton
+public class VideoManager : Manager<VideoManager>
 {
 
 
-    public SignalListener draw_chessboard;
-    public SignalListener draw_chess;
+    public Action draw_chess=() => DrawingUtility.DrawChess();
 
     public override void Init()
     {
-        draw_chessboard = new("DrawChessBoard", delegate
-        {
-            DrawingUtility.DrawChessboard();
-        }, listeners);
 
-        draw_chess = new("DrawChess", delegate
-        {
-            DrawingUtility.DrawChess();
-        }, listeners);
         base.Init();
+        DrawingUtility.DrawChessboard();
+        EventManager.Instance.TryToRegister(draw_chess, "DrawChess");
+        //Debug.Log(EventManager.Instance.listenList.ContainsKey("DrawChess"));
 
     }
 

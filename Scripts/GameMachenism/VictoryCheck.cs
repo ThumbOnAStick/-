@@ -19,11 +19,11 @@ public static class VictoryCheck
 
         if (team == -1)
         {
-            target_grid = Chessboard.black_cells;
+            target_grid = LogicManager.Instance.current_board.black_cells;
         }
         else
         {
-            target_grid = Chessboard.white_cells;
+            target_grid = LogicManager.Instance.current_board.white_cells;
 
         }
         return Horizontal(point, target_grid) || Vertical(point, target_grid) || Slash(point, target_grid) || BackSlash(point, target_grid);

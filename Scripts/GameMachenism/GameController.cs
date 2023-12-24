@@ -22,22 +22,22 @@ public class GameController
         }
 
         //if I am a human
-        List<float> mouse_po = InputListener.keys_and_values["MouseXY"];
+        List<float> mouse_po = InputManager.Instance.keys_and_values["MouseXY"];
         
         int x = Mathf.RoundToInt(mouse_po[0]);
         int y = Mathf.RoundToInt(mouse_po[1]);
-        return new Vector2Int(x,y);
+        return new Vector2Int(x, y);
     }
 
     public void CtrollerPlace()
     {
         Vector2Int pointer = Pointer();
-        if (Chessboard.TryToPlace(pointer, team))
+        if (LogicManager.Instance.current_board.TryToPlace(pointer, team))
         {
             //Debug.Log("Place Succeed, Locatoin: "+pointer);
 
             //Instantiate Chess Game Object
-            SignalUtility.EmitSignal("DrawChess");
+            EventManager.Instance.Dispatch("DrawChess");
 
             //If win
             if (VictoryCheck.IsWin(team, pointer))
@@ -47,7 +47,7 @@ public class GameController
             }
 
             //If not win
-            SignalUtility.EmitSignal("NextPlayer");
+            EventManager.Instance.Dispatch("NextPlayer");
 
 
         }
@@ -56,7 +56,7 @@ public class GameController
 
     public GameController(int _team, bool _is_ai)
     {
-        team= _team;
-        is_ai= _is_ai;
+        team = _team;
+        is_ai = _is_ai;
     }
 }

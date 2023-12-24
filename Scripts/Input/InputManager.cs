@@ -4,30 +4,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Listens all constant values
-public static class InputListener
+public class InputManager : Manager<InputManager>
 {
     //Triggers
-    static InputAndSignal mouse_release;
+    public InputSignal mouse_release;
 
 
     //Constants
-    public static Dictionary<string, List<float>> keys_and_values=new();
-    static KeyedValue mouseXY;
+    public  Dictionary<string, List<float>> keys_and_values = new();
+    public KeyedValue mouseXY;
 
 
 
-    public static void Init()
+    public override void Init()
     {
+        base.Init();
         //Init Triggers
         mouse_release = new(MouseUp, "HumanTryToPlace", null);
 
         //Init Constants
         mouseXY = new("MouseXY", ListenMouseXY, keys_and_values);
-
     }
-
-    public static void Update()
+    public override void UpdateMethods()
     {
+        base.UpdateMethods();
         //Check Triggers
         mouse_release.Check();
 
@@ -53,13 +53,13 @@ public static class InputListener
 }
 
 //Triggers
-public class InputAndSignal
+public class InputSignal
 {
     Func<bool> get_input;
     string signal;
-    InputAndSignal next_node;
+    InputSignal next_node;
 
-    public InputAndSignal(Func<bool> _get_input, string _signal, InputAndSignal _next_node)
+    public InputSignal(Func<bool> _get_input, string _signal, InputSignal _next_node)
     {
         get_input = _get_input;
         signal = _signal;
@@ -71,7 +71,7 @@ public class InputAndSignal
     {
         if (get_input.Invoke())
         {
-            SignalUtility.EmitSignal(signal);
+            EventManager.Instance.Dispatch(signal);
             return;
         }
         next_node?.Check();
@@ -85,8 +85,6 @@ public class KeyedValue
 
     //Constantly check values
     public Func<List<float>> listen;
-
-
 
     public KeyedValue(string _key, Func<List<float>> _listen, Dictionary<string, List<float>> _keys_and_values)
     {
