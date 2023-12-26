@@ -43,12 +43,12 @@ public class EventManager : Singleton<EventManager>
     /// ÒÆ³ıÄ³¸öÊÂ¼ş
     /// </summary>
     /// <param name="id"></param>
-    public void UnAssign(string id)
+    public void UnRegister(string id)
     {
         if (!listenList.ContainsKey(id))
         {
             return;
-        }
+        }   
 
         listenList.Remove(id);
     }

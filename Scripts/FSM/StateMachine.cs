@@ -61,7 +61,7 @@ public class StateMachine
         int len = all_conds.Count;
         for (int i = 0; i < len; i++)
         {
-            EventManager.Instance.UnAssign(all_conds[i]._target_signal);
+            EventManager.Instance.UnRegister(all_conds[i]._target_signal);
         }
     }
 

@@ -159,12 +159,12 @@ public class LogicManager : SFMClientManager<LogicManager>
         //Is AI
         if (active_controller.is_ai == true)
         {
-            EventManager.Instance.UnAssign("AIThinkingComplete");
+            EventManager.Instance.UnRegister("AIThinkingComplete");
             EventManager.Instance.TryToRegister(action,"AIThinkingComplete");
             return;
         }
         //Else
-        EventManager.Instance.UnAssign("HumanTryToPlace");
+        EventManager.Instance.UnRegister("HumanTryToPlace");
         EventManager.Instance.TryToRegister(action, "HumanTryToPlace");
 
     }
