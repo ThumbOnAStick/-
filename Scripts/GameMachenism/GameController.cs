@@ -34,7 +34,6 @@ public class GameController
         Vector2Int pointer = Pointer();
         if (LogicManager.Instance.current_board.TryToPlace(pointer, team))
         {
-            //Debug.Log("Place Succeed, Locatoin: "+pointer);
 
             //Instantiate Chess Game Object
             EventManager.Instance.Dispatch("DrawChess");
@@ -47,7 +46,7 @@ public class GameController
             }
 
             //If not win
-            EventManager.Instance.Dispatch("NextPlayer");
+            EventManager.Instance.Dispatch(LogicManager.nextPlayer);
 
 
         }

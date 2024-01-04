@@ -8,6 +8,14 @@ public class EventManager : Singleton<EventManager>
 {
     public Dictionary<string, Action> listenList=new();
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(this);
+        listenList.Clear();
+    }
+
     /// <summary>
     /// ×¢²áÄ³¸öÊÂ¼ş
     /// </summary>

@@ -69,11 +69,11 @@ public class State
             string target = targets[i];
             Action exit =()=>
             {
+                //Debug.Log("Exit"+" Target:"+target);
                 Exit();
                 myFsm.SetState(target);
             };
             EventManager.Instance.TryToRegister(exit, inputs[i]);
-            Debug.Log("Registered: " + inputs[i]);
         }
 
 
@@ -86,7 +86,6 @@ public class State
     {
         for (int i = 0; i < inputs.Count; i++)
         {
-
             EventManager.Instance.UnRegister(inputs[i]);
         }
 

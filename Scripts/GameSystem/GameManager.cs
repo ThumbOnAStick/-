@@ -9,27 +9,26 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        //All registered Fsm must be cleaed
-        RegisteredSFM.Init();
 
-        //Initialize input listener
+        //清空储存的所有状态机
+        FsmManager.Instance.UnregisterAll();
+
+
         InputManager.Instance.Init();
         LogicManager.Instance.Init();
         VideoManager.Instance.Init();
-        SFMManager.Instance.Init();
     }
     
 
 
     private void Update()
     {
-        //Update input layer
+        
         InputManager.Instance.UpdateMethods();
         LogicManager.Instance.UpdateMethods();
         VideoManager.Instance.UpdateMethods();
-        SFMManager.Instance.UpdateMethods();
-
-        //Update the managers
-
+        FsmManager.Instance.UpdateMethods();
     }
+
+
 }

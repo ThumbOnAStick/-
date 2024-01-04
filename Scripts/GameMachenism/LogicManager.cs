@@ -4,7 +4,7 @@ using UnityEngine;
 using ChessGrid;
 using System;
 
-public class LogicManager : SFMClientManager<LogicManager>
+public class LogicManager : Manager<LogicManager>
 {
     //子模块：棋盘
     public Chessboard current_board = new();
@@ -14,40 +14,29 @@ public class LogicManager : SFMClientManager<LogicManager>
     GameController player1;
     GameController player2;
 
+    //状态机
+    FiniteStateMachine fsm;
+
+    //常用字段
+    public readonly static string playerOneRound="PlayerOneRound";
+    public readonly static string playerTwoRound = "PlayerTwoRound";
+    public readonly static string endGame = "EndGame";
+    public readonly static string nextPlayer = "NextPlayer";
+    public readonly static string win = "Win";
+
+
     //Game Loop
     public override void Init()
     {
         player1 = new(1, false);
         player2 = new(-1, false);
         active_controller = player1;
+        GameData.Set("Player1", "CurrentPlayer");
         current_board.Init(15);
+        InitLogicManagerStateMachines();
         base.Init();
     }
 
-    public override void SFMInit()
-    {
-        //Make machines and conds
-        InitLogicManagerStateMachines();
-
-        //Apply machines
-        Player_one_round.ApplyTo();
-        Player_two_round.ApplyTo();
-        Game_end.ApplyTo();
-
-        //Apply conds
-        NextPlayer.ApplyTo();
-        EndGame.ApplyTo();
-
-        The_only_layer.activated_id = Player_one_round.id;
-
-        sfm = new SFM
-        {
-            layers = new() { The_only_layer }
-        };
-
-        base.SFMInit();
-
-    }
 
     public override void UpdateMethods()
     {
@@ -55,102 +44,38 @@ public class LogicManager : SFMClientManager<LogicManager>
     }
 
 
-    // 逻辑管理器的状态机层级
-    public StateMachineLayer The_only_layer = new();
-
-    //逻辑管理器的状态机
-    StateMachine Player_one_round;
-    StateMachine Player_two_round;
-    StateMachine Game_end;
-    Condition NextPlayer;
-    Condition EndGame;
-
     /// <summary>
-    /// 生成逻辑管理器的所有状态机
+    /// 初始化逻辑管理器的状态机
     /// </summary>
     void InitLogicManagerStateMachines()
     {
-        //Debug.Log(player1.team);
-        //Debug.Log(player2.team);
+        fsm = new(playerOneRound);
 
-        Player_one_round = new(
-            "player1",
-            delegate
-         {
-             active_controller = player1;
-             SwitchController();
-         },
-            delegate
-         {
-             //CheckHumanPlayerOperation();
-             //CheckComputerPlayerOperation();
-         },
-            delegate
-         {
+        List<string> inputs1 = new() { nextPlayer, win };
+        List<string> targets1 = new() { playerTwoRound, endGame };
+        fsm.CreateState(playerOneRound, inputs1, targets1, InitController,null, SwitchController);
 
-         },
-         The_only_layer
-        );
+         List<string> inputs2 = new() { nextPlayer, win }; ;
+        List<string> targets2 = new() { playerOneRound, endGame };
+        fsm.CreateState(playerTwoRound, inputs2, targets2, InitController,null, SwitchController);
 
-        Player_two_round = new(
-            "player2",
-         delegate
-        {
-            active_controller = player2;
-            SwitchController();
-        },
-         delegate
-        {
-            //CheckHumanPlayerOperation();
-            //CheckComputerPlayerOperation();
-        },
-         delegate
-        {
 
-        },
-       The_only_layer
-       );
+        List<string> inputs3 = new();
+        List<string> targets3 = new();
+        fsm.CreateState(endGame, inputs3, targets3);
 
-        Game_end = new(
-            "game end",
-         delegate
-         {
+        FsmManager.Instance.Register("TestFsm", fsm);
 
-         },
-         delegate
-         {
-            
-         },
-         delegate
-         {
-
-         },
-         The_only_layer
-       );
-
-        NextPlayer = new()
-        {
-            from = new List<string> { "player1", "player2" },
-            to = new List<string> { "player2", "player1" },
-            target_signal = "NextPlayer",
-            self_layer = The_only_layer,
-        };
-        EndGame = new() 
-        {
-            from = new List<string> { "player1", "game end" },
-            to = new List<string> { "player2", "game end" },
-            target_signal = "Win",
-            self_layer = The_only_layer,
-        };
 
 
     }
 
     /// <summary>
-    /// 让游戏控制器监听放置的事件
+    /// 初始化控制器
     /// </summary>
-    public void SwitchController()
+    public void InitController()
     {
+ 
         Action action = () =>
         {
             active_controller.CtrollerPlace();
@@ -169,7 +94,23 @@ public class LogicManager : SFMClientManager<LogicManager>
 
     }
 
+    /// <summary>
+    /// 切换控制器
+    /// </summary>
+    public void SwitchController()
+    {
+        if (active_controller == player1)
+        {
+            active_controller = player2;
+            GameData.Set("Player2", "CurrentPlayer");
+        }
+        else
+        {
+            active_controller = player1;
+            GameData.Set("Player1", "CurrentPlayer");
 
+        }
+    }
 
 
 }

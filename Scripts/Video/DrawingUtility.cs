@@ -10,7 +10,6 @@ public static class DrawingUtility
 
     public static void DrawChessboard()
     {
-        Debug.Log("Draw");
         Chessboard current_board = LogicManager.Instance.current_board;
 
         //Draw Lines

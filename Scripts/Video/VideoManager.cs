@@ -11,7 +11,6 @@ public class VideoManager : Manager<VideoManager>
 
     public override void Init()
     {
-
         base.Init();
         DrawingUtility.DrawChessboard();
         EventManager.Instance.TryToRegister(draw_chess, "DrawChess");
